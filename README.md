@@ -1,6 +1,7 @@
 # LeagueOfLegends
 
-put all the datababse into datababse folder.
+put all the datababse file(chromosomeA, chromosomeB, chromosomeA_to_B, chromosomeB_to_A, blastn.pkl, etc.) into datababse folder.
+Everything inside folder "database, local and tracking" won't be sync.
 
 Get result by doing:
 
