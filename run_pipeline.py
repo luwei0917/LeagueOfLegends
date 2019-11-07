@@ -39,18 +39,19 @@ parser = argparse.ArgumentParser(description="This is my playground for current 
 # parser.add_argument("protein", help="the name of protein")
 # parser.add_argument("template", help="the name of template file")
 parser.add_argument("-f", "--fromChromosome", type=str, default="A")
-parser.add_argument("-t", "--toChromosome",type=str, default="B")
+parser.add_argument("-t", "--toChromosome", type=str, default="B")
 parser.add_argument("--AtoBTracking", type=str, default="AtoBGMAP.tracking")
 parser.add_argument("--BtoATracking", type=str, default="BtoAGMAP.tracking")
-parser.add_argument("--dbA", type=str, default="chromosomeA")
-parser.add_argument("--dbB", type=str, default="chromosomeB")
-parser.add_argument("--dbAtoB", type=str, default="GMAP_chromosome_A_to_B")
-parser.add_argument("--dbBtoA", type=str, default="GMAP_chromosome_B_to_A")
+parser.add_argument("--dbA", type=str, default="database/chromosomeA")
+parser.add_argument("--dbB", type=str, default="database/chromosomeB")
+parser.add_argument("--dbAtoB", type=str, default="database/GMAP_chromosome_A_to_B")
+parser.add_argument("--dbBtoA", type=str, default="database/GMAP_chromosome_B_to_A")
 parser.add_argument("-o", "--out", type=str, default=".", help="where you store your results")
 parser.add_argument("--validation", type=str, default="./dev_validation_set.tsv", help="focus on the one has ground truth. speed up everything")
 parser.add_argument("-n", "--name", type=str, default="GMAP_combined_nov06")
-parser.add_argument("--blastnAtoB", type=str, default="blastn_A_to_B.pkl")
-parser.add_argument("--blastnBtoA", type=str, default="blastn_B_to_A.pkl")
+parser.add_argument("--blastnAtoB", type=str, default="database/blastn_A_to_B.pkl")
+parser.add_argument("--blastnBtoA", type=str, default="database/blastn_B_to_A.pkl")
+parser.add_argument("-d", "--debug", action="store_true", default=False, help="print out additional information")
 args = parser.parse_args()
 
 with open('gg_cmd.txt', 'a') as f:
@@ -96,10 +97,10 @@ database_dic = {A:dbA, B:dbB, A+"to"+B:db_A_to_B, B+"to"+A:db_B_to_A}
 
 # pre = "/Users/weilu/Dropbox/genome_algorithms_comp519/project/Challenge_9934185_scoring/"
 pre = args.out
+os.system(f'mkdir -p {pre}')
 write_to = f"{pre}/{args.name}.tsv"
 
-# if args.validation is not "None":
-if False:
+if args.validation != "None":
     # fileLocation = "/Users/weilu/Dropbox/genome_algorithms_comp519/project/Challenge_9934185_scoring/dev_validation_set.tsv"
     fileLocation = args.validation
     dev_validation_set = read_result(fileLocation)
@@ -323,8 +324,9 @@ with open(write_to, "w") as out:
             toGene = line["SourceB_Gene"]
             a = df2.query(f"subject_gene == '{toGene}'")
             if len(a) > 1:
-                print("---should not happen----")
-                print(a)
+                if args.debug:
+                    print("---should not happen----")
+                    print(a)
             elif len(a) == 1:
                 # print(a)
                 query_gene = a["query_gene"].iloc[0]
@@ -346,3 +348,7 @@ with open(write_to, "w") as out:
 # if you want to know which chromosome a transcript belongs, you can do the following.
 # transcript = dbA["transcriptA1"]
 # transcript.chrom
+
+# if you have the following error
+# ModuleNotFoundError: No module named 'pandas.core.internals.managers'; 'pandas.core.internals' is not a package
+# weis-mbp-2:LeagueOfLegends weilu$ python3 -m pip install --upgrade pandas
