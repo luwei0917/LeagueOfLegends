@@ -51,10 +51,10 @@ Temporary Items
 __pycache__
 
 # test Folder
-test
+# test
 _local
 *.bak
 
 
 # database fodler, because it is too large.
-database
+database_back
