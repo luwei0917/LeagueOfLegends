@@ -40,8 +40,8 @@ parser = argparse.ArgumentParser(description="This is my playground for current 
 # parser.add_argument("template", help="the name of template file")
 parser.add_argument("-f", "--fromChromosome", type=str, default="A")
 parser.add_argument("-t", "--toChromosome", type=str, default="B")
-parser.add_argument("--AtoBTracking", type=str, default="AtoBGMAP.tracking")
-parser.add_argument("--BtoATracking", type=str, default="BtoAGMAP.tracking")
+parser.add_argument("--AtoBTracking", type=str, default="database/AtoBGMAP.tracking")
+parser.add_argument("--BtoATracking", type=str, default="database/BtoAGMAP.tracking")
 parser.add_argument("--dbA", type=str, default="database/chromosomeA")
 parser.add_argument("--dbB", type=str, default="database/chromosomeB")
 parser.add_argument("--dbAtoB", type=str, default="database/GMAP_chromosome_A_to_B")
@@ -215,9 +215,59 @@ write_to = f"{pre}/{args.name}_post_modification_1.tsv"
 df = pd.concat([no_duplication, with_duplication])
 pandas_to_tsv(write_to, df)
 
-
+print(pad_with_dash("consider multiple transcript"))
 fileLocation = write_to
 mySolution = read_result(fileLocation)
+
+AtoB_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_AtoBGMAP'
+BtoA_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_BtoAGMAP'
+AtoB_bestmatch_list = AtoB_bestmatch(AtoB_compare_filename)
+BtoA_bestmatch_list = BtoA_bestmatch(BtoA_compare_filename)
+complete = AtoB_bestmatch_list
+complete.update(BtoA_bestmatch_list)
+
+newSolution = mySolution.copy()
+for i, line in mySolution.iterrows():
+    fromTranscript = line["SourceA_Transcript_ID"]
+    toTranscript = line["SourceB_Transcript_ID"]
+    toGenome = line["SourceB"]
+    a = complete[fromTranscript]
+    toDB = database_dic[toGenome]
+    if len(a) == 0:
+        # print("Not found", fromTranscript)
+        pass
+    elif len(a) == 1:
+        # print("Unique transscript", fromTranscript)
+        if toTranscript != a[0]:
+            if line["Call"] == "gene_fusion":
+                # ok
+                pass
+            else:
+                print("why they differ", fromTranscript, toTranscript, a[0])
+    else:
+        # print("Multiple transcript", fromTranscript)
+        toGenes = [getFromGene(toDB, x) for x in a]
+        if len(set(toGenes)) != 1:
+            print("They don't have same gene?", fromTranscript, a, toGenes)
+        for x in a:
+            new_line = line.copy()
+            new_line["Call"] = "multiple_transcript"
+            new_line["SourceB_Transcript_ID"] = x
+            newSolution = newSolution.append(new_line)
+    newSolution = newSolution.reset_index(drop=True)
+# if one transcript has both multiple_transcript and others match,
+# only keep the unique one.
+
+def only_keep_multiple_transcript(d):
+    if "multiple_transcript" in d["Call"].tolist():
+        return d.query("Call == 'multiple_transcript'")
+    else:
+        return d
+
+mySolution = newSolution.groupby("SourceA_Transcript_ID").apply(only_keep_multiple_transcript).reset_index(drop=True)
+
+write_to = f"{pre}/{args.name}_post_modification_2.tsv"
+pandas_to_tsv(write_to, mySolution)
 
 if False:
     print(pad_with_dash("consider multiple transcript"))

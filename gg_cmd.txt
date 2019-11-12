@@ -8,3 +8,18 @@ run_pipeline.py --AtoBTracking /Users/weilu/Dropbox/genome_algorithms_comp519/pr
 run_pipeline.py --AtoBTracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_A_to_B/AtoBGMAP.tracking --BtoATracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_B_to_A/BtoAGMAP.tracking -o test --validation /Users/weilu/Dropbox/genome_algorithms_comp519/project/Challenge_9934185_scoring/dev_validation_set.tsv
 run_pipeline.py --AtoBTracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_A_to_B/AtoBGMAP.tracking --BtoATracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_B_to_A/BtoAGMAP.tracking -o test --validation None
 run_pipeline.py --AtoBTracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_A_to_B/AtoBGMAP.tracking --BtoATracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_B_to_A/BtoAGMAP.tracking -o test --validation dev_validation_set.tsv
+run_pipeline.py --AtoBTracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_A_to_B/AtoBGMAP.tracking --BtoATracking /Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_B_to_A/BtoAGMAP.tracking -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv
+run_pipeline.py -o test --validation dev_validation_set.tsv

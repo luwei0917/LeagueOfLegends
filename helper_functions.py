@@ -1,4 +1,5 @@
 import pandas as pd
+from collections import defaultdict
 
 def getFromTranscript(data):
     d = data.split(":")[1]
@@ -158,3 +159,148 @@ def assign_to_out(assign, fromGenome, toGenome, fromTranscript, toTranscript, fr
 
 def pad_with_dash(s):
     return '{s:{c}^{n}}'.format(s=s,n=80,c='-')
+
+
+def clean_query(string):
+    words = string.split(".")
+    return words[0][1:]
+
+def clean_ref(string):
+    words = string.split()
+    return words[5]
+
+
+
+
+def extract_map(lines):
+    if not lines:#first lines
+        return []
+    qtranscript = clean_query(lines[0])
+    transcripts = [qtranscript]
+    for line in lines[1:]:
+        if line[0] in ["c","k","="]:
+            rtranscript = clean_ref(line)
+            transcripts.append(rtranscript)
+    return transcripts
+
+def read_tracking_file(filename):
+
+    tracking_transcript_list = defaultdict(list)
+    fi = open(filename,'r')
+    line = fi.readline()
+    lines = []
+    while(line):
+        if line[0] == '>':
+            transcripts = extract_map(lines)
+            lines = [line]
+            if len(transcripts)>1:
+                tracking_transcript_list[transcripts[0]] = transcripts[1:]
+
+        else:
+            lines.append(line)
+
+        line = fi.readline()
+
+    # last transcript
+    transcripts = extract_map(lines)
+    if len(transcripts)>1:
+        tracking_transcript_list[transcripts[0]] = transcripts[1:]
+
+
+    fi.close()
+    return tracking_transcript_list
+
+def read_validation_file(filename = "dev_validation_set.tsv", source = 'A', \
+                         calls = ['unique_transcript','multiple_transcript']):
+    vali_list = pd.read_csv(filename, skiprows=1, sep="\t",\
+        names=["SourceA", "SourceB", "SourceA_Transcript_ID", "SourceB_Transcript_ID", "Call",\
+               "Score", "SourceA_Gene", "SourceB_Gene", "Category"])
+    matched_gene_list = vali_list.query("("+f"or".join(" Call == '%s' "%i for i in calls) +") "+\
+    f"and SourceA == '{source}'")
+
+    return matched_gene_list
+
+def AtoB_bestmatch(AtoB_compare_filename):
+
+    #faketracking_transcript_list = read_fake_file(AtoB_compare_dir+fakeAtoB_compare_filename)
+    tracking_transcript_list = read_tracking_file(AtoB_compare_filename)
+    #tracking_transcript_list.update(faketracking_transcript_list)
+
+    return tracking_transcript_list
+
+def BtoA_bestmatch(BtoA_compare_filename):
+    #faketracking_transcript_list = read_fake_file(BtoA_compare_dir+fakeBtoA_compare_filename)
+
+    tracking_transcript_list = read_tracking_file(BtoA_compare_filename)
+    #tracking_transcript_list.update(faketracking_transcript_list)
+    return tracking_transcript_list
+
+def match_sen_pre(tracking_transcript_list, matched_gene_list):
+
+    count = 0
+    NoMatchList = []
+    WrongMatchList = []
+    WrondDict = {}
+    NoDict = {}
+    for index, row in matched_gene_list.iterrows():
+        if row['SourceA_Transcript_ID'] in tracking_transcript_list:
+            if row['SourceB_Transcript_ID'] in tracking_transcript_list[row['SourceA_Transcript_ID']]:
+                count += 1
+            else:
+                WrongMatchList.append(row['SourceA_Transcript_ID'])
+                WrondDict[row['SourceA_Transcript_ID']] = \
+                [row['SourceB_Transcript_ID'], tracking_transcript_list[row['SourceA_Transcript_ID']]]
+        else:
+            NoMatchList.append(row['SourceA_Transcript_ID'])
+            NoDict[row['SourceA_Transcript_ID']] = row['SourceB_Transcript_ID']
+    print("%d queries"%len(matched_gene_list))
+    print("Sensitivity %.2f " % (count/(len(matched_gene_list)-len(WrongMatchList))))
+    print("Presition %.2f " % (count/(len(matched_gene_list)-len(NoMatchList))))
+    print("Transcripts with no matched gene", NoMatchList)
+    print("Transcripts with wrong matched gene", WrongMatchList)
+    print("Wrong matches:")
+    print("Transcript \t\tGround_Truth \tGMAP")
+    for i in WrongMatchList:
+        print("%-20s%-15s\t%s"%(i,WrondDict[i][0],WrondDict[i][1]))
+    print("No matches:")
+    print("Transcript \t\tGround_Truth \tGMAP")
+    for i in NoMatchList:
+        print("%-20s%-15s\t%s"%(i,NoDict[i],"Not found"))
+    return NoMatchList, WrongMatchList
+
+def BtoA_match_sen_pre(tracking_transcript_list, matched_gene_list):
+
+    count = 0
+    NoMatchList = []
+    WrongMatchList = []
+    WrondDict = {}
+    NoDict = {}
+    print("Wrong matches:")
+    print("Transcript \t\tGround_Truth \tGMAP")
+    for index, row in matched_gene_list.iterrows():
+        if row['SourceA_Transcript_ID'] in tracking_transcript_list:
+            if row['SourceB_Transcript_ID'] in tracking_transcript_list[row['SourceA_Transcript_ID']]:
+                count += 1
+            else:
+                WrongMatchList.append(row['SourceA_Transcript_ID'])
+                WrondDict[row['SourceA_Transcript_ID']] = \
+                [row['SourceB_Transcript_ID'], tracking_transcript_list[row['SourceA_Transcript_ID']]]
+                print(row['SourceA_Transcript_ID'],\
+                      row['SourceB_Transcript_ID'], tracking_transcript_list[row['SourceA_Transcript_ID']])
+        else:
+            NoMatchList.append(row['SourceA_Transcript_ID'])
+            NoDict[row['SourceA_Transcript_ID']] = row['SourceB_Transcript_ID']
+    print("%d queries"%len(matched_gene_list))
+    print("Sensitivity %.2f " % (count/(len(matched_gene_list)-len(WrongMatchList))))
+    print("Presition %.2f " % (count/(len(matched_gene_list)-len(NoMatchList))))
+    print("Transcripts with no matched gene", NoMatchList)
+    print("Transcripts with wrong matched gene", WrongMatchList)
+
+
+    print("No matches:")
+    print("Transcript \t\tGround_Truth \tGMAP")
+    for i in NoMatchList:
+        print("%-20s%-15s\t%s"%(i,NoDict[i],"Not found"))
+    return NoMatchList, WrongMatchList
+
+
