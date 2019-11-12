@@ -52,6 +52,8 @@ parser.add_argument("-n", "--name", type=str, default="GMAP_combined_nov06")
 parser.add_argument("--blastnAtoB", type=str, default="database/blastn_A_to_B.pkl")
 parser.add_argument("--blastnBtoA", type=str, default="database/blastn_B_to_A.pkl")
 parser.add_argument("-d", "--debug", action="store_true", default=False, help="print out additional information")
+parser.add_argument("--trmap_AtoB", type=str, default="database/trmap_AtoBGMAP")
+parser.add_argument("--trmap_BtoA", type=str, default="database/trmap_BtoAGMAP")
 args = parser.parse_args()
 
 with open('gg_cmd.txt', 'a') as f:
@@ -68,7 +70,6 @@ B = args.toChromosome
 # dbB = gffutils.FeatureDB(f"chromosome{B}")
 # db_A_to_B = gffutils.FeatureDB(f"GMAP_chromosome_{A}_to_{B}")
 # db_B_to_A = gffutils.FeatureDB(f"GMAP_chromosome_{B}_to_{A}")
-
 # fileLocation = "/Users/weilu/Dropbox/genome_algorithms_comp519/project/results/A_to_B/result_A_to_B.tracking"
 
 dbA = gffutils.FeatureDB(args.dbA)
@@ -218,9 +219,10 @@ pandas_to_tsv(write_to, df)
 print(pad_with_dash("consider multiple transcript"))
 fileLocation = write_to
 mySolution = read_result(fileLocation)
-
-AtoB_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_AtoBGMAP'
-BtoA_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_BtoAGMAP'
+# AtoB_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_AtoBGMAP'
+# BtoA_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_BtoAGMAP'
+AtoB_compare_filename = args.trmap_AtoB
+BtoA_compare_filename = args.trmap_BtoA
 AtoB_bestmatch_list = AtoB_bestmatch(AtoB_compare_filename)
 BtoA_bestmatch_list = BtoA_bestmatch(BtoA_compare_filename)
 complete = AtoB_bestmatch_list
@@ -268,50 +270,6 @@ mySolution = newSolution.groupby("SourceA_Transcript_ID").apply(only_keep_multip
 
 write_to = f"{pre}/{args.name}_post_modification_2.tsv"
 pandas_to_tsv(write_to, mySolution)
-
-if False:
-    print(pad_with_dash("consider multiple transcript"))
-    # if one transcript has both unique_transcript and absent_transcirpt match,
-    # only keep the unique one.
-    def only_keep_multiple_transcript(d):
-        if "multiple_transcript" in d["Call"].tolist():
-            return d.query("Call == 'multiple_transcript'")
-        else:
-            return d
-
-    mySolution = mySolution.groupby("SourceA_Transcript_ID").apply(only_keep_multiple_transcript).reset_index(drop=True)
-    # with_duplication
-
-    has_SourceB_Transcript_ID = mySolution.dropna(subset=["SourceB_Transcript_ID"]).reset_index(drop=True)
-    is_duplicated_B = has_SourceB_Transcript_ID.duplicated(subset="SourceB_Transcript_ID", keep=False)
-    no_duplication_B = has_SourceB_Transcript_ID[~is_duplicated_B]
-    with_duplication_B = has_SourceB_Transcript_ID[is_duplicated_B]
-    SourceB_dic = defaultdict(list)
-    # change unique to multiple_transcript, add if not exist.(ideally, this shouldn't happen)
-    for i, line in with_duplication_B.iterrows():
-        SourceB_Transcript_ID = line["SourceB_Transcript_ID"]
-        # you swtich sourceA to sourceB and call become multiple_transcript
-        new_line = line.copy()
-        new_line["SourceA"] = line["SourceB"]
-        new_line["SourceB"] = line["SourceA"]
-        new_line["SourceA_Transcript_ID"] = line["SourceB_Transcript_ID"]
-        new_line["SourceB_Transcript_ID"] = line["SourceA_Transcript_ID"]
-        new_line["Call"] = "multiple_transcript"
-        new_line["SourceA_Gene"] = new_line["SourceB_Gene"]
-        mySolution = mySolution.append(new_line)
-    # if one transcript has both unique_transcript and absent_transcirpt match,
-    # only keep the unique one.
-    def only_keep_multiple_transcript(d):
-        if "multiple_transcript" in d["Call"].tolist():
-            return d.query("Call == 'multiple_transcript'")
-        else:
-            return d
-
-    mySolution = mySolution.groupby("SourceA_Transcript_ID").apply(only_keep_multiple_transcript).reset_index(drop=True)
-
-    # fileLocation = "/Users/weilu/Dropbox/genome_algorithms_comp519/project/Challenge_9934185_scoring/cleaned_GMAP_oct30.tsv"
-    write_to = f"{pre}/{args.name}_post_modification_2.tsv"
-    pandas_to_tsv(write_to, mySolution)
 
 
 print(pad_with_dash("blastn result further process"))
