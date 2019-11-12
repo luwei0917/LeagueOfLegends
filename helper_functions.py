@@ -304,3 +304,34 @@ def BtoA_match_sen_pre(tracking_transcript_list, matched_gene_list):
     return NoMatchList, WrongMatchList
 
 
+def only_keep_unique_if_unique_and_absent_transcript_both_exist(with_duplication):
+    print(pad_with_dash("consider unique and absent transcript both exists"))
+    if len(with_duplication) == 0:
+        return with_duplication
+    # if one transcript has both unique_transcript and absent_transcirpt match,
+    # only keep the unique one.
+    # for example
+    # weilu > grep "transcriptA128220" AtoBGMAP_sensitivity.tracking
+    # TCONS_00003300	XLOC_000853	geneB20367|transcriptB20365	k	q1:transcriptA128220.path2|transcriptA128220.mrna2|1|0.000000|0.000000|0.000000|3019
+    # TCONS_00145525	XLOC_040599	geneB11392|transcriptB11386	j	q1:transcriptA128220.path1|transcriptA128220.mrna1|11|0.000000|0.000000|0.000000|3426
+    def only_keep_unique(d):
+        if "unique_transcript" in d["Call"].tolist():
+            return d.query("Call == 'unique_transcript'")
+        else:
+            return d
+    # print(with_duplication)
+    with_duplication = with_duplication.groupby("SourceA_Transcript_ID").apply(only_keep_unique).reset_index(drop=True)
+    return with_duplication
+
+def only_keep_first_one_if_has_more_than_one_absent_transcript(with_duplication):
+    print(pad_with_dash("remove_duplicated_absent_transcript"))
+    if len(with_duplication) == 0:
+        return with_duplication
+    # here, just keep the first one if we still have duplicated absent_transcript.
+    def remove_duplicated_absent_transcript(d):
+        if "absent_transcript" in d["Call"].tolist():
+            return d.head(1)
+        else:
+            return d
+    with_duplication = with_duplication.groupby("SourceA_Transcript_ID").apply(remove_duplicated_absent_transcript).reset_index(drop=True)
+    return with_duplication

@@ -58,5 +58,6 @@ _local
 
 # database fodler, because it is too large.
 database/*
+A_to_C_database/*
 tracking/*
 local/*
