@@ -11,6 +11,12 @@
 # ---------------------------------------------
 # Final Score:                       	 695.36
 ###############################################
+
+# transcriptB12233 not mapped by anything.
+# transcriptA110920, transcriptA8945 is different from transcriptA107513.(check out transcriptA107513 figure)
+# transcriptA49997 is different from others matching transcriptB27104
+
+
 316
 333
 --------------------------should be unique_transcript---------------------------

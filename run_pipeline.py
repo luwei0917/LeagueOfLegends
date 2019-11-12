@@ -287,7 +287,7 @@ else:
     # each query-subject pair, I only keep the first(the longest alignment)
     data1["query_gene"] = data1["qseqid"].apply(lambda x: getFromGene(dbA, x))
     data1["subject_gene"] = data1["sseqid"].apply(lambda x: getFromGene(dbB, x))
-    data1.to_pickle("results/blastn/blastn_A_to_B.pkl")
+    data1.to_pickle("database/blastn_A_to_B.pkl")
 
 fileLocation = args.blastnBtoA
 if args.blastnBtoA[-4:] == ".pkl":
@@ -300,7 +300,7 @@ else:
     # each query-subject pair, I only keep the first(the longest alignment)
     data2["query_gene"] = data2["qseqid"].apply(lambda x: getFromGene(dbA, x))
     data2["subject_gene"] = data2["sseqid"].apply(lambda x: getFromGene(dbB, x))
-    data2.to_pickle("results/blastn/blastn_B_to_A.pkl")
+    data2.to_pickle("database/blastn_B_to_A.pkl")
 
 df1 = data1.groupby(["qseqid", "sseqid"]).head(1).reset_index(drop=True)
 df2 = data2.groupby(["qseqid", "sseqid"]).head(1).reset_index(drop=True)
