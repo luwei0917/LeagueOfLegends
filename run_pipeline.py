@@ -32,6 +32,8 @@ from Bio.PDB.Polypeptide import one_to_three
 from Bio.PDB.Polypeptide import three_to_one
 from Bio.PDB.PDBParser import PDBParser
 from collections import defaultdict
+from Bio import SeqIO
+from io import StringIO
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna
 import pickle
