@@ -443,14 +443,15 @@ print(pad_with_dash("cluster multi transcirpt, further classification."))
 ref:
 B	A	transcriptB32395	transcriptA52049	unique_transcript	0	geneB32395	geneA14875	target_contained
 mySolution:
-B	A	transcriptB32395	transcriptA125712	multiple_transcript	0	geneB32395	geneA14875	nan
-B	A	transcriptB32395	transcriptA86515	multiple_transcript	0	geneB32395	geneA14875	nan
-B	A	transcriptB32395	transcriptA99865	multiple_transcript	0	geneB32395	geneA14875	nan
-B	A	transcriptB32395	transcriptA7588	multiple_transcript	0	geneB32395	geneA14875	nan
-B	A	transcriptB32395	transcriptA139610	multiple_transcript	0	geneB32395	geneA14875	nan
-B	A	transcriptB32395	transcriptA126200	multiple_transcript	0	geneB32395	geneA14875	nan
-B	A	transcriptB32395	transcriptA74121	multiple_transcript	0	geneB32395	geneA14875	nan
-B	A	transcriptB32395	transcriptA52049	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA125712	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=3163;from_coverage_length=4574;to_coverage_length=7582
+B	A	transcriptB32395	transcriptA86515	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=4799;from_coverage_length=4574;to_coverage_length=8921
+B	A	transcriptB32395	transcriptA99865	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=4708;from_coverage_length=4574;to_coverage_length=8921
+B	A	transcriptB32395	transcriptA7588	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=5745;from_coverage_length=4574;to_coverage_length=8645
+B	A	transcriptB32395	transcriptA139610	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=5047;from_coverage_length=4574;to_coverage_length=8921
+B	A	transcriptB32395	transcriptA126200	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=5075;from_coverage_length=4574;to_coverage_length=8921
+B	A	transcriptB32395	transcriptA74121	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=4096;from_coverage_length=4574;to_coverage_length=7288
+B	A	transcriptB32395	transcriptA52049	multiple_transcript	0	geneB32395	geneA14875	from_len=1809;to_len=1452;from_coverage_length=4574;to_coverage_length=4176
+
 '''
 fileLocation = write_to
 mySolution = read_result(fileLocation)
