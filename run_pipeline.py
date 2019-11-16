@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 #!/usr/bin/env python
-=======
 """
 This pipeline generate the required output in one file for each pairwise mapping of genomes
 
@@ -8,11 +6,10 @@ to run the file:
     python run_pipeline.py --AtoBTracking <AtoBtrackingFilePath> --BtoATracking <BtoAtrackingFilePath> \
            -o <outFileDirectory> --validation <validationFileLocation>
 
-example command: 
+example command:
     python run_pipeline.py --AtoBTracking ./AtoBGMAP.tracking --BtoATracking ./BtoAGMAP.tracking -o test --validation dev_validation_set.tsv
 
 """
->>>>>>> bface5640ea7d9877fca65eff7a9d94acfe0ad7b
 import os
 import sys
 import random
@@ -85,7 +82,7 @@ args = parser.parse_args()
 store and process the input files
 - read input files into variables
 - concatenate the tracking files
-- when validating with dev_validation_set, only keep the rows of transcripts that are in the test file 
+- when validating with dev_validation_set, only keep the rows of transcripts that are in the test file
 
 '''
 
@@ -161,7 +158,7 @@ initial processing:
 - parse each line of the filtered database
 - classify transcript in this sequence(may be have multiple calls for now):
     unique transcript, absent gene, gene fusion and absent transcript
-- store the result of the assignment 
+- store the result of the assignment
 '''
 
 data = filtered_data
@@ -210,9 +207,9 @@ print(pad_with_dash("Done initial processing"))
 '''
 additional processing:
 
-- find the transcripts with multiple calls 
+- find the transcripts with multiple calls
 - analyze all of its calls and keep one call only
-- store the result of the assignment 
+- store the result of the assignment
 '''
 
 fileLocation = write_to
@@ -233,9 +230,9 @@ def only_keep_gene_fusion_if_it_exist(d):
     If a transcript has a gene_fusion classification, even it may have other classifications,
     only classify the transcript as gene fusion
 
-    input: 
+    input:
         d: Pandas DataFrame, result with duplicated classifications
-    output: 
+    output:
         d: Pandas DataFrame, modified the calls of the transcripts that have gene fusions
 
     '''
@@ -326,14 +323,14 @@ for i, line in mySolution.iterrows():
 # only keep the unique one.
 
 def only_keep_multiple_transcript(d):
-    ''' 
+    '''
            if one transcript has both unique_transcript and multiple_transcirpt match,
-        only keep the multiple one.    
-    input: 
+        only keep the multiple one.
+    input:
         d: Pandas DataFrame, result with duplicated classifications
-    output: 
+    output:
         d: Pandas DataFrame, modified the calls of the transcripts that have both unique_transcript and multiple_transcript calls
-    ''' 
+    '''
     if "multiple_transcript" in d["Call"].tolist():
         return d.query("Call == 'multiple_transcript'")
     else:
