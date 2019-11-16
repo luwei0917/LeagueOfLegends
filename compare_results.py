@@ -27,9 +27,23 @@ from Bio.Alphabet import generic_dna
 
 from helper_functions import *
 
-fileLocation = "dev_validation_set.tsv"
+parser = argparse.ArgumentParser(description="This is my playground for current project")
+# parser.add_argument("protein", help="the name of protein")
+# parser.add_argument("template", help="the name of template file")
+parser.add_argument("-s", "--solution", type=str, default="test_nov16/GMAP_combined_nov06_post_modification_4.tsv")
+parser.add_argument("-v", "--validation", type=str, default="dev_validation_set.tsv")
+args = parser.parse_args()
+
+with open('cmd_compare_results.txt', 'a') as f:
+    f.write(' '.join(sys.argv))
+    f.write('\n')
+
+
+# fileLocation = "dev_validation_set.tsv"
+fileLocation = args.validation
 dev_validation_set = read_result(fileLocation)
-fileLocation = "test/GMAP_combined_nov06_post_modification_3.tsv"
+# fileLocation = "test/GMAP_combined_nov06_post_modification_3.tsv"
+fileLocation = args.solution
 mySolution = read_result(fileLocation)
 
 # only consider sourceA is A for now.

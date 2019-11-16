@@ -324,9 +324,9 @@ B	A	transcriptB33667	transcriptA23854	multiple_transcript	0	geneB33667	geneA2562
 B	A	transcriptB33667	transcriptA110365	multiple_transcript	0	geneB33667	geneA25622	;reverse_call:absent_transcript;from_len=1468;to_len=1167;from_coverage_length=5143;to_coverage_length=4146
 B	A	transcriptB37956	transcriptA115025	unique_transcript	0	geneB37956	geneA41459	
 B	A	transcriptB38638		absent_transcript	0	geneB38638	geneA42124	
-B	A	transcriptB4326	transcriptA110920	multiple_transcript	0	geneB4326	geneA39694;geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=5006;from_coverage_length=1800;to_coverage_length=18422
-B	A	transcriptB4326	transcriptA107513	multiple_transcript	0	geneB4326	geneA39694;geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=967;from_coverage_length=1800;to_coverage_length=1081
-B	A	transcriptB4326	transcriptA8945	multiple_transcript	0	geneB4326	geneA39694;geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=4881;from_coverage_length=1800;to_coverage_length=18310
+B	A	transcriptB4326	transcriptA110920	multiple_transcript	0	geneB4326	geneA39694	;reverse_call:absent_transcript;from_len=1317;to_len=5006;from_coverage_length=1800;to_coverage_length=18422
+B	A	transcriptB4326	transcriptA107513	multiple_transcript	0	geneB4326	geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=967;from_coverage_length=1800;to_coverage_length=1081
+B	A	transcriptB4326	transcriptA8945	multiple_transcript	0	geneB4326	geneA39694	;reverse_call:absent_transcript;from_len=1317;to_len=4881;from_coverage_length=1800;to_coverage_length=18310
 B	A	transcriptB6336	transcriptA3945	multiple_transcript	0	geneB6336	geneA35467	;reverse_call:gene_fusion;from_len=1445;to_len=1900;from_coverage_length=9602;to_coverage_length=7251
 B	A	transcriptB6336	transcriptA119851	multiple_transcript	0	geneB6336	geneA35467	;reverse_call:gene_fusion;from_len=1445;to_len=2166;from_coverage_length=9602;to_coverage_length=10151
 B	A	transcriptB6337		absent_transcript	0	geneB6337	geneA35467	

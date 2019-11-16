@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import sys
 import random
@@ -24,6 +25,9 @@ from Bio import SeqIO
 from io import StringIO
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna
+import pickle
+from scipy import stats
+from sklearn.cluster import KMeans
 
 from helper_functions import *
 
@@ -196,9 +200,14 @@ write_to = f"{pre}/{args.name}_post_modification_1.tsv"
 df = pd.concat([no_duplication, with_duplication])
 pandas_to_tsv(write_to, df)
 
+
+A_records = SeqIO.to_dict(SeqIO.parse("database/A.transcripts.fasta", "fasta"))
+B_records = SeqIO.to_dict(SeqIO.parse("database/B.transcripts.fasta", "fasta"))
+seq_records = {A:A_records, B:B_records}
 print(pad_with_dash("consider multiple transcript"))
 fileLocation = write_to
 mySolution = read_result(fileLocation)
+mySolution.Category = mySolution.Category.fillna('')
 # AtoB_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_AtoBGMAP'
 # BtoA_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_BtoAGMAP'
 AtoB_compare_filename = args.trmap_AtoB
@@ -213,6 +222,7 @@ for i, line in mySolution.iterrows():
     fromTranscript = line["SourceA_Transcript_ID"]
     toTranscript = line["SourceB_Transcript_ID"]
     toGenome = line["SourceB"]
+    # a is the list of transcripts that best match to fromTranscript.
     a = complete[fromTranscript]
     toDB = database_dic[toGenome]
     if len(a) == 0:
@@ -227,14 +237,31 @@ for i, line in mySolution.iterrows():
             else:
                 print("why they differ", fromTranscript, toTranscript, a[0])
     else:
+        fromGenome = line["SourceA"]
+        from_seq_len = len(seq_records[fromGenome][fromTranscript].seq)
+        mrna = database_dic[fromGenome][fromTranscript]
+        from_coverage_length = mrna.stop - mrna.start
+        # consider if they all have similar length.
+        # for x in a:
+        #     transcript = seq_records[toGenome][x]
+        #     seq_len = len(transcript.seq)
         # print("Multiple transcript", fromTranscript)
         toGenes = [getFromGene(toDB, x) for x in a]
         if len(set(toGenes)) != 1:
             print("They don't have same gene?", fromTranscript, a, toGenes)
-        for x in a:
+        for i, x in enumerate(a):
             new_line = line.copy()
             new_line["Call"] = "multiple_transcript"
             new_line["SourceB_Transcript_ID"] = x
+            new_line["SourceB_Gene"] = toGenes[i]
+            reverse_call = mySolution.query(f"SourceA_Transcript_ID == '{x}'")["Call"].iloc[0]
+            new_line["Category"] += f";reverse_call:{reverse_call};"
+
+            transcript = seq_records[toGenome][x]
+            seq_len = len(transcript.seq)
+            mrna = database_dic[toGenome][x]
+            coverage_length = mrna.stop - mrna.start
+            new_line["Category"] += f"from_len={from_seq_len};to_len={seq_len};from_coverage_length={from_coverage_length};to_coverage_length={coverage_length}"
             newSolution = newSolution.append(new_line)
     newSolution = newSolution.reset_index(drop=True)
 # if one transcript has both multiple_transcript and others match,
@@ -332,10 +359,100 @@ with open(write_to, "w") as out:
         formated_line = "\t".join(line.values) + "\n"
         out.write(formated_line)
 
+
+print(pad_with_dash("cluster multi transcirpt, further classification."))
+'''
+ref:
+B	A	transcriptB32395	transcriptA52049	unique_transcript	0	geneB32395	geneA14875	target_contained
+mySolution:
+B	A	transcriptB32395	transcriptA125712	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA86515	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA99865	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA7588	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA139610	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA126200	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA74121	multiple_transcript	0	geneB32395	geneA14875	nan
+B	A	transcriptB32395	transcriptA52049	multiple_transcript	0	geneB32395	geneA14875	nan
+'''
+fileLocation = write_to
+mySolution = read_result(fileLocation)
+call = "multiple_transcript"
+subset = mySolution.query(f"Call == '{call}'").reset_index(drop=True)
+subset_no_change = mySolution.query(f"Call != '{call}'")
+consider_list = subset["SourceA_Transcript_ID"].unique()
+
+new_subset_list = []
+
+def get_coverage_length(Genome, Transcript, database_dic):
+    mrna = database_dic[Genome][Transcript]
+    return mrna.stop - mrna.start
+
+subset["toCoverage"] = subset.apply(lambda x: get_coverage_length(x.SourceB, x.SourceB_Transcript_ID, database_dic), axis=1)
+subset["fromCoverage"] = subset.apply(lambda x: get_coverage_length(x.SourceA, x.SourceA_Transcript_ID, database_dic), axis=1)
+# subset["diff"] = abs(subset["fromCoverage"] - subset["toCoverage"])
+
+for i in range(len(consider_list)):
+    fromTranscript = consider_list[i]
+    a = subset.query(f"SourceA_Transcript_ID=='{fromTranscript}'").reset_index(drop=True)
+    z = np.abs(stats.zscore(a["toCoverage"]))
+    X = np.append(a["fromCoverage"].iloc[0], a["toCoverage"].values).reshape(-1, 1)
+    kmeans = KMeans(n_clusters=2)
+    kmeans.fit(X)
+    y_kmeans = kmeans.predict(X)
+    if sum(y_kmeans == y_kmeans[0]) == 1:
+        # only the source it self in one group. then we do nothing.
+        new_subset_list.append(a)
+        pass
+    elif sum(y_kmeans == y_kmeans[0]) == 2:
+        # we keep those in the same cluster of the source
+        # if only one, then it is unique.
+        b = a[y_kmeans[1:] == y_kmeans[0]].reset_index(drop=True)
+        b["Call"] = "unique_transcript"
+        new_subset_list.append(b)
+    else:
+        # if more than one, then keep those in the same cluster of the source
+        b = a[y_kmeans[1:] == y_kmeans[0]]
+        new_subset_list.append(b)
+new_subset = pd.concat(new_subset_list).reset_index(drop=True)
+mySolution = pd.concat([new_subset.iloc[:,:9], subset_no_change]).reset_index(drop=True)
+write_to = f"{pre}/{args.name}_post_modification_4.tsv"
+pandas_to_tsv(write_to, mySolution)
+
+# fileLocation = write_to
+# mySolution = read_result(fileLocation)
+# A_transcript_length_dict = pickle.load(open(f"database/A_transcript_length_dict.pkl","rb"))
+# B_transcript_length_dict = pickle.load(open(f"database/B_transcript_length_dict.pkl","rb"))
+# transcript_length_dict = {A:A_transcript_length_dict, B:B_transcript_length_dict}
+
+# call = "multiple_transcript"
+# subset = mySolution.query(f"Call == '{call}'").reset_index(drop=True)
+# subset_no_change = mySolution.query(f"Call != '{call}'")
+# consider_list = subset["SourceA_Transcript_ID"].unique()
+# subset["toTranscriptLength"] = subset.apply(lambda x: transcript_length_dict[x.SourceB][x.SourceB_Transcript_ID], axis=1)
+# subset["fromTranscriptLength"] = subset.apply(lambda x: transcript_length_dict[x.SourceA][x.SourceA_Transcript_ID], axis=1)
+# subset["diff"] = abs(subset["fromTranscriptLength"] - subset["toTranscriptLength"])
+# new_subset_list = []
+# for i in range(len(consider_list)):
+#     fromTranscript = consider_list[i]
+#     a = subset.query(f"SourceA_Transcript_ID=='{fromTranscript}'").reset_index(drop=True)
+#     z = np.abs(stats.zscore(a["toTranscriptLength"]))
+#     idx = a["diff"].idxmin()
+#     if z[idx] > 2:
+#         b = a.iloc[idx:idx+1]
+#     else:
+#         b = a[z<2]
+#     new_subset_list.append(b)
+# new_subset = pd.concat(new_subset_list).reset_index(drop=True)
+# mySolution = pd.concat([new_subset.iloc[:,:9], subset_no_change]).reset_index(drop=True)
+# write_to = f"{pre}/{args.name}_post_modification_4.tsv"
+# pandas_to_tsv(write_to, mySolution)
 # notes:
 # if you want to know which chromosome a transcript belongs, you can do the following.
 # transcript = dbA["transcriptA1"]
 # transcript.chrom
+
+
+
 
 # if you have the following error
 # ModuleNotFoundError: No module named 'pandas.core.internals.managers'; 'pandas.core.internals' is not a package
