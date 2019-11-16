@@ -32,8 +32,6 @@ from Bio.PDB.Polypeptide import one_to_three
 from Bio.PDB.Polypeptide import three_to_one
 from Bio.PDB.PDBParser import PDBParser
 from collections import defaultdict
-from Bio import SeqIO
-from io import StringIO
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna
 import pickle
@@ -337,6 +335,55 @@ def only_keep_multiple_transcript(d):
         return d
 
 mySolution = newSolution.groupby("SourceA_Transcript_ID").apply(only_keep_multiple_transcript).reset_index(drop=True)
+
+def multiple_gene_fusion(d):
+    '''
+        if transcript A1 is multiple transcript to B1, B2, B3
+        if all transcriptB to A1 is gene fusion or absent gene:
+            return d
+        else:
+            remove transcriptB in multiple transcript
+        if transcript A1 match to only one transcriptB
+        change A1's call to unique
+    '''
+    multiple_transcript = d.query("Call == 'multiple_transcript'")
+    transcriptA = multiple_transcript["SourceA_Transcript_ID"].tolist()
+    transcriptB = multiple_transcript["SourceB_Transcript_ID"].tolist()
+
+    #form a dictionary for multiple transcript matchings
+    A_to_B_dict = dict()
+    for i in range(len(transcriptA)):
+        if transcriptA[i] not in A_to_B_dict:
+            A_to_B_dict[transcriptA[i]] = [transcriptB[i]]
+        else:
+            A_to_B_dict[transcriptA[i]].append(transcriptB[i])
+
+    gene_fusion = d.query("Call == 'gene_fusion'")["SourceA_Transcript_ID"].tolist()
+    absent_gene = d.query("Call == 'absent_gene'")["SourceA_Transcript_ID"].tolist()
+
+    for transcriptA, transcriptBs in A_to_B_dict.items():
+        new_list = []
+        for transcriptB in transcriptBs:
+            if transcriptB not in gene_fusion and transcriptB not in absent_gene:
+                new_list.append(transcriptB)
+        if new_list:
+            A_to_B_dict[transcriptA] = new_list
+
+    #add all non-multiple transcripts
+    d_new = d.query("Call != 'multiple_transcript'")
+
+    #add the gene fusion/absnet gene filtered multiple transcripts
+    for transcriptA, transcriptBs in A_to_B_dict.items():
+        for transcriptB in transcriptBs:
+            trAB = d.query("SourceA_Transcript_ID == '%s'"%transcriptA).query("SourceB_Transcript_ID == '%s'"%transcriptB)
+            d_new = d_new.append(trAB)
+    return d_new
+
+mySolution = multiple_gene_fusion(mySolution)
+
+
+    
+        
 
 write_to = f"{pre}/{args.name}_post_modification_2.tsv"
 pandas_to_tsv(write_to, mySolution)
