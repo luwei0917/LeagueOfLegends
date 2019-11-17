@@ -338,6 +338,57 @@ def only_keep_multiple_transcript(d):
 
 mySolution = newSolution.groupby("SourceA_Transcript_ID").apply(only_keep_multiple_transcript).reset_index(drop=True)
 
+def multiple_gene_fusion(d):
+    '''
+        if transcript A1 is multiple transcript to B1, B2, B3
+        if all transcriptB to A1 is gene fusion or absent gene:
+            return d
+        else:
+            remove transcriptB in multiple transcript
+        if transcript A1 match to only one transcriptB
+        change A1's call to unique
+    '''
+    multiple_transcript = d.query("Call == 'multiple_transcript'")
+    transcriptA = multiple_transcript["SourceA_Transcript_ID"].tolist()
+    transcriptB = multiple_transcript["SourceB_Transcript_ID"].tolist()
+
+    #form a dictionary for multiple transcript matchings
+    A_to_B_dict = dict()
+    for i in range(len(transcriptA)):
+        if transcriptA[i] not in A_to_B_dict:
+            A_to_B_dict[transcriptA[i]] = [transcriptB[i]]
+        else:
+            A_to_B_dict[transcriptA[i]].append(transcriptB[i])
+
+    gene_fusion = d.query("Call == 'gene_fusion'")["SourceA_Transcript_ID"].tolist()
+    absent_gene = d.query("Call == 'absent_gene'")["SourceA_Transcript_ID"].tolist()
+
+    for transcriptA, transcriptBs in A_to_B_dict.items():
+        new_list = []
+        for transcriptB in transcriptBs:
+            if transcriptB not in gene_fusion and transcriptB not in absent_gene:
+                new_list.append(transcriptB)
+        if new_list:
+            A_to_B_dict[transcriptA] = new_list
+
+    #add all non-multiple transcripts
+    d_new = d.query("Call != 'multiple_transcript'")
+
+    #add the gene fusion/absnet gene filtered multiple transcripts
+    for transcriptA, transcriptBs in A_to_B_dict.items():
+        if len(transcriptBs) == 1:
+            transcriptB = transcriptBs[0]
+            trAB = d.query("SourceA_Transcript_ID == '%s'"%transcriptA).query("SourceB_Transcript_ID == '%s'"%transcriptB)
+            trAB["Call"] = 'unique_transcript'
+            d_new = d_new.append(trAB)
+        else:
+            for transcriptB in transcriptBs:
+                trAB = d.query("SourceA_Transcript_ID == '%s'"%transcriptA).query("SourceB_Transcript_ID == '%s'"%transcriptB)
+                d_new = d_new.append(trAB)
+    return d_new
+
+mySolution = multiple_gene_fusion(mySolution)
+
 write_to = f"{pre}/{args.name}_post_modification_2.tsv"
 pandas_to_tsv(write_to, mySolution)
 
@@ -388,7 +439,14 @@ df2 = data2.groupby(["qseqid", "sseqid"]).head(1).reset_index(drop=True)
 df = pd.concat([df1, df2]).reset_index(drop=True)
 
 
-df["ratio"] = df["length"]**2/df["qlen"]
+# df["ratio"] = df["length"]**2/df["qlen"]
+# df["ratio"] = df["length"]*(1+ df["length"]/df["qlen"]) * df["pident"]
+# df["ratio"] = df["bitscore"] + df["length"]*(1+ df["length"]/df["qlen"])
+# df["ratio"] = df["bitscore"]
+# df["lengthScore"] = df["length"]*(1+ df["length"]/df["qlen"])
+df["lengthScore2"] = df["length"]**2/df["qlen"]/df["slen"]  # df["slen"] part just used for normalization
+# I could add an aditional penalty for mismatch.
+df["ratio"] = df["bitscore"] * df["lengthScore2"]  # lengthScore2 disfavor larger qlen more than lengthScore.
 # filter out pident < 95
 df = df.query("pident > 95").reset_index(drop=True)
 # for those queries that target same subject. the one with largest ratio wins.
@@ -396,6 +454,7 @@ df = df.sort_values(["sseqid", "ratio"], ascending=[True, False]).reset_index(dr
 df["rank"] = df.groupby("sseqid")["ratio"].rank(ascending=False)
 # for every subject transcript. only keep the one with highest ratio.
 df2 = df.groupby("sseqid").head(1).reset_index(drop=True)
+# print(df.query("subject_gene == 'geneB24592'"))
 # fromDB = dbA
 # toDB = dbB
 # database_dic[x[10]]
