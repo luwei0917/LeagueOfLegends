@@ -11,11 +11,8 @@ B	A	transcriptB27104	transcriptA38435	multiple_transcript	0	geneB27104	geneA3223
 B	A	transcriptB32395	transcriptA52049	multiple_transcript	0	geneB32395	geneA14875	;reverse_call:unique_transcript;from_len=1809;to_len=1452;from_coverage_length=4574;to_coverage_length=4176
 B	A	transcriptB33667	transcriptA23854	multiple_transcript	0	geneB33667	geneA25622	;reverse_call:absent_transcript;from_len=1468;to_len=1336;from_coverage_length=5143;to_coverage_length=4315
 B	A	transcriptB33667	transcriptA110365	multiple_transcript	0	geneB33667	geneA25622	;reverse_call:absent_transcript;from_len=1468;to_len=1167;from_coverage_length=5143;to_coverage_length=4146
-B	A	transcriptB4326	transcriptA110920	multiple_transcript	0	geneB4326	geneA39694;geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=5006;from_coverage_length=1800;to_coverage_length=18422
-B	A	transcriptB4326	transcriptA107513	multiple_transcript	0	geneB4326	geneA39694;geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=967;from_coverage_length=1800;to_coverage_length=1081
-B	A	transcriptB4326	transcriptA8945	multiple_transcript	0	geneB4326	geneA39694;geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=4881;from_coverage_length=1800;to_coverage_length=18310
-B	A	transcriptB6336	transcriptA3945	multiple_transcript	0	geneB6336	geneA35467	;reverse_call:gene_fusion;from_len=1445;to_len=1900;from_coverage_length=9602;to_coverage_length=7251
-B	A	transcriptB6336	transcriptA119851	multiple_transcript	0	geneB6336	geneA35467	;reverse_call:gene_fusion;from_len=1445;to_len=2166;from_coverage_length=9602;to_coverage_length=10151
+B	A	transcriptB4326	transcriptA107513	unique_transcript	0	geneB4326	geneA39695	;reverse_call:absent_transcript;from_len=1317;to_len=967;from_coverage_length=1800;to_coverage_length=1081
+B	A	transcriptB6336	transcriptA119851	unique_transcript	0	geneB6336	geneA35467	;reverse_call:gene_fusion;from_len=1445;to_len=2166;from_coverage_length=9602;to_coverage_length=10151
 A	B	transcriptA100337		absent_transcript	0	geneA42124	geneB38638	
 A	B	transcriptA100848	transcriptB27104	unique_transcript	0	geneA32231	geneB27104	
 A	B	transcriptA100998	transcriptB17369	unique_transcript	0	geneA8280	geneB17369	
