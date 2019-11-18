@@ -1,0 +1,290 @@
+454
+471
+--------------------------should be unique_transcript---------------------------
+----------
+ref:
+A	C	transcriptA98955	transcriptC48228	unique_transcript	0	transcriptA98955	geneC15530	exact_match
+mySolution:
+A	C	transcriptA98955	transcriptC48228	unique_transcript	0	geneA20285	geneC15530	;category:=;
+----------
+----------
+ref:
+C	A	transcriptC21580	transcriptA38435	unique_transcript	0	geneC26591	geneA32231	nan
+mySolution:
+C	A	transcriptC21580	transcriptA100848	unique_transcript	0	geneC26591	geneA32231	;category:j;from_len=1509;to_len=1014;from_coverage_length=3332;to_coverage_length=2456
+----------
+----------
+ref:
+C	A	transcriptC21581	transcriptA96038	unique_transcript	0	geneC26591	geneA32231	nan
+mySolution:
+C	A	transcriptC21581	transcriptA100848	multiple_transcript	0	geneC26591	geneA32231	;category:=;from_len=1480;to_len=1014;from_coverage_length=3096;to_coverage_length=2456
+C	A	transcriptC21581	transcriptA96038	multiple_transcript	0	geneC26591	geneA32231	;category:=;from_len=1480;to_len=1196;from_coverage_length=3096;to_coverage_length=2638
+
+----------
+----------
+ref:
+C	A	transcriptC21579	transcriptA13117	unique_transcript	0	geneC26591	geneA32231	nan
+mySolution:
+C	A	transcriptC21579	transcriptA100848	multiple_transcript	0	geneC26591	geneA32231	;category:=;from_len=1393;to_len=1014;from_coverage_length=3096;to_coverage_length=2456
+C	A	transcriptC21579	transcriptA13117	multiple_transcript	0	geneC26591	geneA32231	;category:=;from_len=1393;to_len=1188;from_coverage_length=3096;to_coverage_length=2717
+
+----------
+----------
+ref:
+A	C	transcriptA38435	transcriptC21580	unique_transcript	0	geneA32231	geneC26591	nan
+mySolution:
+A	C	transcriptA38435	nan	absent_transcript	0	geneA32231	geneC26591	;category:j;
+----------
+----------
+ref:
+C	A	transcriptC51023	transcriptA52049	unique_transcript	0	geneC10293	geneA14875	target_contained
+mySolution:
+C	A	transcriptC51023	transcriptA126200	unique_transcript	0	geneC10293	geneA14875	;category:=;from_len=5133;to_len=5075;from_coverage_length=8957;to_coverage_length=8921
+----------
+----------
+ref:
+C	A	transcriptC25905	transcriptA57835	unique_transcript	0	geneC14	geneA376	nan
+mySolution:
+C	A	transcriptC25905	nan	absent_transcript	0	geneC14	geneA376	;category:o;
+----------
+----------
+ref:
+A	C	transcriptA95402	transcriptC11807	unique_transcript	0	transcriptA95402	geneC20156	nan
+mySolution:
+A	C	transcriptA95402	nan	absent_transcript	0	transcriptA95402	geneC20156	;category:o;
+----------
+----------
+ref:
+C	A	transcriptC30558	transcriptA34069	unique_transcript	0	geneC8283	geneA12608	novel_exon_combination
+mySolution:
+C	A	transcriptC30558	nan	absent_transcript	0	geneC8283	geneA12608	;category:j;
+----------
+----------
+ref:
+A	C	transcriptA18586	transcriptC2872	unique_transcript	0	geneA8280	geneC38984	nan
+mySolution:
+A	C	transcriptA18586	transcriptC2870	multiple_transcript	0	geneA8280	geneC38984	;category:=;from_len=1212;to_len=2913;from_coverage_length=1696;to_coverage_length=3618
+A	C	transcriptA18586	transcriptC2871	multiple_transcript	0	geneA8280	geneC38984	;category:=;from_len=1212;to_len=1705;from_coverage_length=1696;to_coverage_length=3837
+A	C	transcriptA18586	transcriptC2872	multiple_transcript	0	geneA8280	geneC38984	;category:=;from_len=1212;to_len=3204;from_coverage_length=1696;to_coverage_length=3686
+
+----------
+----------
+ref:
+A	C	transcriptA137263	transcriptC7171	unique_transcript	0	geneA8281	geneC38985	nan
+mySolution:
+A	C	transcriptA137263	transcriptC7170	unique_transcript	0	geneA8281	geneC38985	;category:=;
+----------
+----------
+ref:
+C	A	transcriptC30333	transcriptA37445	unique_transcript	0	geneC15869	geneA20676	target_contained
+mySolution:
+C	A	transcriptC30333	nan	absent_transcript	0	geneC15869	geneA20676	;category:n;
+----------
+Correct:  57 Wrong:  12
+-------------------------should be multiple_transcript--------------------------
+ref:
+C	A	transcriptC51022	transcriptA52049	multiple_transcript	0	geneC10293	geneA14875	target_contained
+mySolution:
+None
+ref:
+
+mySolution:
+A	C	transcriptA107322	transcriptC51021	multiple_transcript	0	geneA14875	geneC10293	;category:c;from_len=1854;to_len=5091;from_coverage_length=4614;to_coverage_length=8951
+ref:
+
+mySolution:
+A	C	transcriptA107322	transcriptC51026	multiple_transcript	0	geneA14875	geneC10293	;category:c;from_len=1854;to_len=5063;from_coverage_length=4614;to_coverage_length=8951
+Correct:  13 Wrong:  3
+-----------------------------should be gene_fusion------------------------------
+Correct:  71 Wrong:  0
+--------------------------should be absent_transcript---------------------------
+----------
+ref:
+C	A	transcriptC46603	nan	absent_transcript	0	geneC15523	geneA20292	novel_retained_intron
+mySolution:
+C	A	transcriptC46603	nan	absent_gene	0	geneC15523	nan	;category:x;
+----------
+----------
+ref:
+A	C	transcriptA128220	nan	absent_transcript	0	geneA1914	geneC1394	nan
+mySolution:
+A	C	transcriptA128220	nan	gene_fusion	0	geneA1914	geneC1394;geneC1395	;category:j;
+----------
+----------
+ref:
+C	A	transcriptC706	nan	absent_transcript	0	geneC1168	geneA255	nan
+mySolution:
+C	A	transcriptC706	nan	absent_gene	0	geneC1168	nan	;category:u;
+----------
+----------
+ref:
+A	C	transcriptA28438	nan	absent_transcript	0	geneA12607	geneC8282	match_not_same_gene
+mySolution:
+A	C	transcriptA28438	nan	absent_transcript	0	geneA12607	geneC8283	;category:j;
+----------
+----------
+ref:
+A	C	transcriptA63875	nan	absent_transcript	0	geneA12607	geneC8282	match_not_same_gene
+mySolution:
+A	C	transcriptA63875	nan	absent_transcript	0	geneA12607	geneC8283	;category:j;
+----------
+----------
+ref:
+A	C	transcriptA112888	nan	absent_transcript	0	geneA12607	geneC8282	match_not_same_gene
+mySolution:
+A	C	transcriptA112888	nan	absent_transcript	0	geneA12607	geneC8283	;category:j;
+----------
+----------
+ref:
+A	C	transcriptA41122	nan	absent_transcript	0	transcriptA41122	geneC10352	antisense
+mySolution:
+A	C	transcriptA41122	nan	absent_gene	0	transcriptA41122	nan	;category:x;
+----------
+----------
+ref:
+A	C	transcriptA110418	nan	absent_transcript	0	transcriptA110418	geneC10352	antisense
+mySolution:
+A	C	transcriptA110418	nan	absent_gene	0	transcriptA110418	nan	;category:x;
+----------
+----------
+ref:
+A	C	transcriptA108474	nan	absent_transcript	0	transcriptA108474	geneC10352	antisense
+mySolution:
+A	C	transcriptA108474	nan	absent_gene	0	transcriptA108474	nan	;category:x;
+----------
+----------
+ref:
+C	A	transcriptC2871	nan	absent_transcript	0	geneC38984	geneA8280	nan
+mySolution:
+C	A	transcriptC2871	transcriptA18586	unique_transcript	0	geneC38984	geneA8280	;category:j;
+----------
+----------
+ref:
+C	A	transcriptC2870	nan	absent_transcript	0	geneC38984	geneA8280	nan
+mySolution:
+C	A	transcriptC2870	transcriptA18586	unique_transcript	0	geneC38984	geneA8280	;category:j;
+----------
+----------
+ref:
+C	A	transcriptC7174	nan	absent_transcript	0	geneC38985	geneA8281	nan
+mySolution:
+C	A	transcriptC7174	transcriptA3883	multiple_transcript	0	geneC38985	geneA8281	;category:c;from_len=1219;to_len=4476;from_coverage_length=1289;to_coverage_length=4698
+C	A	transcriptC7174	transcriptA113727	multiple_transcript	0	geneC38985	geneA8281	;category:c;from_len=1219;to_len=3793;from_coverage_length=1289;to_coverage_length=3895
+
+----------
+----------
+ref:
+C	A	transcriptC30332	nan	absent_transcript	0	geneC15869	geneA20676	changed_exons
+mySolution:
+C	A	transcriptC30332	transcriptA24361	unique_transcript	0	geneC15869	geneA20676	;category:n;
+----------
+----------
+ref:
+C	A	transcriptC30337	nan	absent_transcript	0	geneC15869	geneA20676	changed_exons
+mySolution:
+C	A	transcriptC30337	transcriptA31735	unique_transcript	0	geneC15869	geneA20676	;category:n;
+----------
+----------
+ref:
+C	A	transcriptC21538	nan	absent_transcript	0	geneC33388	geneA39694	changed_exons
+mySolution:
+C	A	transcriptC21538	nan	gene_fusion	0	geneC33388	geneA39694;geneA39695	;category:j;
+----------
+Correct:  265 Wrong:  15
+-----------------------------should be absent_gene------------------------------
+----------
+ref:
+C	A	transcriptC44545	nan	absent_gene	0	geneC15524	nan	match_not_same_gene
+mySolution:
+C	A	transcriptC44545	transcriptA79020	unique_transcript	0	geneC15524	geneA20281	;category:c;
+----------
+----------
+ref:
+C	A	transcriptC19062	nan	absent_gene	0	geneC2719	nan	match_not_same_gene
+mySolution:
+C	A	transcriptC19062	transcriptA57239	unique_transcript	0	geneC2719	geneA3408	;category:=;
+----------
+----------
+ref:
+A	C	transcriptA74085	nan	absent_gene	0	geneA14952	nan	match_not_same_gene
+mySolution:
+A	C	transcriptA74085	transcriptC35261	unique_transcript	0	geneA14952	geneC10352	;category:c;
+----------
+----------
+ref:
+A	C	transcriptA120576	nan	absent_gene	0	geneA14952	nan	match_not_same_gene
+mySolution:
+A	C	transcriptA120576	nan	absent_transcript	0	geneA14952	geneC10352	;category:j;
+----------
+----------
+ref:
+A	C	transcriptA25520	nan	absent_gene	0	geneA14952	nan	match_not_same_gene
+mySolution:
+A	C	transcriptA25520	nan	absent_transcript	0	geneA14952	geneC10352	;category:j;
+----------
+----------
+ref:
+A	C	transcriptA136055	nan	absent_gene	0	geneA14952	nan	match_not_same_gene
+mySolution:
+A	C	transcriptA136055	nan	absent_transcript	0	geneA14952	geneC10352	;category:j;
+----------
+----------
+ref:
+C	A	transcriptC16178	nan	absent_gene	0	geneC24654	nan	match_not_same_gene
+mySolution:
+C	A	transcriptC16178	nan	absent_transcript	0	geneC24654	geneA35520	;category:j;
+----------
+----------
+ref:
+C	A	transcriptC29697	nan	absent_gene	0	geneC33392	nan	match_not_same_gene
+mySolution:
+C	A	transcriptC29697	nan	gene_fusion	0	geneC33392	geneA39694;geneA39695	;category:j;
+----------
+----------
+ref:
+A	C	transcriptA132727	nan	absent_gene	0	transcriptA132727	nan	source_intronic
+mySolution:
+A	C	transcriptA132727	nan	absent_transcript	0	transcriptA132727	geneC33388	;category:i;
+----------
+Correct:  6 Wrong:  9
+----------------------------should be absent_genome-----------------------------
+----------
+ref:
+A	C	transcriptA20237	nan	absent_genome	0	geneA5016	nan	unmapped
+mySolution:
+A	C	transcriptA20237	nan	absent_transcript	0	geneA5016	geneC4108	;category:o;
+----------
+----------
+ref:
+A	C	transcriptA89058	nan	absent_genome	0	geneA14837	nan	unmapped
+mySolution:
+None
+----------
+----------
+ref:
+C	A	transcriptC33280	nan	absent_genome	0	geneC10477	nan	unmapped
+mySolution:
+C	A	transcriptC33280	nan	absent_transcript	0	geneC10477	geneA15083	;category:o;
+----------
+Correct:  0 Wrong:  3
+---------------exist in reference but not in my solution-----------------
+ref:
+A	C	transcriptA89058	nan	absent_genome	0	geneA14837	nan	unmapped
+mySolution:
+None
+Occurrence:  1
+------------------------------------summary-------------------------------------
+wrong_unique_transcript 12
+correct_unique_transcript 57
+wrong_multiple_transcript 3
+correct_multiple_transcript 13
+wrong_gene_fusion 0
+correct_gene_fusion 71
+wrong_absent_transcript 15
+correct_absent_transcript 265
+wrong_absent_gene 9
+correct_absent_gene 6
+wrong_absent_genome 3
+correct_absent_genome 0
+exist_in_ground_truth_but_not_in_my_solution 1
+455

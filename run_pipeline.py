@@ -44,11 +44,6 @@ from helper_functions import *
 
 
 import gffutils
-# dbA = gffutils.create_db("/Users/weilu/Dropbox/genome_algorithms_comp519/project/Challenge_9934185_A.chromosomes/A.gff3", "chromosomeA")
-# dbB = gffutils.create_db("/Users/weilu/Dropbox/genome_algorithms_comp519/project/Challenge_9934185_B.chromosomes/B.gff3", "chromosomeB")
-# db_A_to_B = gffutils.create_db("/Users/weilu/Dropbox/genome_algorithms_comp519/project/results/A_to_B/new_result/uniuqe_gff3_A_to_B.gff", "chromosome_A_to_B")
-# db_A_to_B = gffutils.create_db("/Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_A_to_B/AtoBmap_match_gene.gff3", "GMAP_chromosome_A_to_B")
-# db_B_to_A = gffutils.create_db("/Users/weilu/Dropbox/genome_algorithms_comp519/project/results/GMAP_B_to_A/BtoAmap_match_gene.gff3", "GMAP_chromosome_B_to_A")
 
 """
 parse the files command line argument
@@ -102,6 +97,8 @@ B = args.toChromosome
 # db_B_to_A = gffutils.FeatureDB(f"GMAP_chromosome_{B}_to_{A}")
 # fileLocation = "/Users/weilu/Dropbox/genome_algorithms_comp519/project/results/A_to_B/result_A_to_B.tracking"
 
+
+
 dbA = gffutils.FeatureDB(args.dbA)
 dbB = gffutils.FeatureDB(args.dbB)
 db_A_to_B = gffutils.FeatureDB(args.dbAtoB)
@@ -125,6 +122,16 @@ raw_data_B_to_A["toGenome"] = A
 
 raw_data = pd.concat([raw_data_A_to_B, raw_data_B_to_A]).reset_index(drop=True)
 database_dic = {A:dbA, B:dbB, A+"to"+B:db_A_to_B, B+"to"+A:db_B_to_A}
+
+# AtoB_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_AtoBGMAP'
+# BtoA_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_BtoAGMAP'
+AtoB_compare_filename = args.trmap_AtoB
+BtoA_compare_filename = args.trmap_BtoA
+AtoB_bestmatch_list = AtoB_bestmatch(AtoB_compare_filename)
+BtoA_bestmatch_list = BtoA_bestmatch(BtoA_compare_filename)
+complete = AtoB_bestmatch_list
+complete.update(BtoA_bestmatch_list)
+
 
 # pre = "/Users/weilu/Dropbox/genome_algorithms_comp519/project/Challenge_9934185_scoring/"
 pre = args.out
@@ -195,6 +202,7 @@ for i, line in data.iterrows():
     assign, extra = assign_absent_transcript(c, assign)
 
     out += assign_to_out(assign, fromGenome, toGenome, fromTranscript, toTranscript, fromGene, toGene)
+    extra += f"\t;category:{c};"
     out += extra
     out += "\n"
 with open(write_to, "w") as o:
@@ -258,19 +266,12 @@ pandas_to_tsv(write_to, df)
 
 A_records = SeqIO.to_dict(SeqIO.parse("database/A.transcripts.fasta", "fasta"))
 B_records = SeqIO.to_dict(SeqIO.parse("database/B.transcripts.fasta", "fasta"))
-seq_records = {A:A_records, B:B_records}
+C_records = SeqIO.to_dict(SeqIO.parse("database/C.transcripts.fasta", "fasta"))
+seq_records = {"A":A_records, "B":B_records, "C":C_records}
 print(pad_with_dash("consider multiple transcript"))
 fileLocation = write_to
 mySolution = read_result(fileLocation)
 mySolution.Category = mySolution.Category.fillna('')
-# AtoB_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_AtoBGMAP'
-# BtoA_compare_filename = '/Users/weilu/Research/LeagueOfLegends/tracking/trmap_BtoAGMAP'
-AtoB_compare_filename = args.trmap_AtoB
-BtoA_compare_filename = args.trmap_BtoA
-AtoB_bestmatch_list = AtoB_bestmatch(AtoB_compare_filename)
-BtoA_bestmatch_list = BtoA_bestmatch(BtoA_compare_filename)
-complete = AtoB_bestmatch_list
-complete.update(BtoA_bestmatch_list)
 
 newSolution = mySolution.copy()
 for i, line in mySolution.iterrows():
@@ -286,12 +287,23 @@ for i, line in mySolution.iterrows():
     elif len(a) == 1:
         # print("Unique transscript", fromTranscript)
         if toTranscript != a[0]:
+
             if line["Call"] == "gene_fusion":
                 # ok
                 pass
             else:
-                print("why they differ", fromTranscript, toTranscript, a[0])
+                # trmap has the higher priority
+                new_line = line.copy()
+                new_line["Call"] = "unique_transcript"
+                new_line["SourceB_Transcript_ID"] = a[0]
+                new_line["SourceB_Gene"] = getFromGene(toDB, a[0])
+                newSolution.iloc[i] = new_line
+                print("they differ", fromTranscript, toTranscript, a[0], line["Call"])
+                print("trmap has higher priority")
     else:
+        if line["Call"] == "gene_fusion":
+            # ok
+            continue
         fromGenome = line["SourceA"]
         from_seq_len = len(seq_records[fromGenome][fromTranscript].seq)
         mrna = database_dic[fromGenome][fromTranscript]
@@ -309,8 +321,8 @@ for i, line in mySolution.iterrows():
             new_line["Call"] = "multiple_transcript"
             new_line["SourceB_Transcript_ID"] = x
             new_line["SourceB_Gene"] = toGenes[i]
-            reverse_call = mySolution.query(f"SourceA_Transcript_ID == '{x}'")["Call"].iloc[0]
-            new_line["Category"] += f";reverse_call:{reverse_call};"
+            # reverse_call = mySolution.query(f"SourceA_Transcript_ID == '{x}'")["Call"].iloc[0]
+            # new_line["Category"] += f";reverse_call:{reverse_call};"
 
             transcript = seq_records[toGenome][x]
             seq_len = len(transcript.seq)
@@ -318,7 +330,7 @@ for i, line in mySolution.iterrows():
             coverage_length = mrna.stop - mrna.start
             new_line["Category"] += f"from_len={from_seq_len};to_len={seq_len};from_coverage_length={from_coverage_length};to_coverage_length={coverage_length}"
             newSolution = newSolution.append(new_line)
-    newSolution = newSolution.reset_index(drop=True)
+newSolution = newSolution.reset_index(drop=True)
 # if one transcript has both multiple_transcript and others match,
 # only keep the unique one.
 
@@ -387,7 +399,7 @@ def multiple_gene_fusion(d):
                 d_new = d_new.append(trAB)
     return d_new
 
-mySolution = multiple_gene_fusion(mySolution)
+# mySolution = multiple_gene_fusion(mySolution)
 
 write_to = f"{pre}/{args.name}_post_modification_2.tsv"
 pandas_to_tsv(write_to, mySolution)
@@ -406,32 +418,36 @@ print(pad_with_dash("blastn result further process"))
 fileLocation = write_to
 mySolution = read_result(fileLocation)
 # fileLocation = "/Users/weilu/Dropbox/genome_algorithms_comp519/project/results/blastn/blastn_A_to_B.dms"
+# fileLocation = args.blastnAtoB
+# if args.blastnAtoB[-4:] == ".pkl":
+#     data1 = pd.read_pickle(fileLocation)
+# else:
+#     data1 = pd.read_csv(fileLocation, sep="\t", names=["qseqid", "sseqid",
+#                                             "pident", "length", "mismatch",
+#                                             "gapopen", "qstart", "qend", "sstart",
+#                                             "send", "evalue", "bitscore", "slen", "qlen"])
+#     # each query-subject pair, I only keep the first(the longest alignment)
+#     data1["query_gene"] = data1["qseqid"].apply(lambda x: getFromGene(dbA, x))
+#     data1["subject_gene"] = data1["sseqid"].apply(lambda x: getFromGene(dbB, x))
+#     data1.to_pickle("database/blastn_A_to_B.pkl")
+
+# fileLocation = args.blastnBtoA
+# if args.blastnBtoA[-4:] == ".pkl":
+#     data2 = pd.read_pickle(fileLocation)
+# else:
+#     data2 = pd.read_csv(fileLocation, sep="\t", names=["qseqid", "sseqid",
+#                                             "pident", "length", "mismatch",
+#                                             "gapopen", "qstart", "qend", "sstart",
+#                                             "send", "evalue", "bitscore", "slen", "qlen"])
+#     # each query-subject pair, I only keep the first(the longest alignment)
+#     data2["query_gene"] = data2["qseqid"].apply(lambda x: getFromGene(dbA, x))
+#     data2["subject_gene"] = data2["sseqid"].apply(lambda x: getFromGene(dbB, x))
+#     data2.to_pickle("database/blastn_B_to_A.pkl")
+
 fileLocation = args.blastnAtoB
-if args.blastnAtoB[-4:] == ".pkl":
-    data1 = pd.read_pickle(fileLocation)
-else:
-    data1 = pd.read_csv(fileLocation, sep="\t", names=["qseqid", "sseqid",
-                                            "pident", "length", "mismatch",
-                                            "gapopen", "qstart", "qend", "sstart",
-                                            "send", "evalue", "bitscore", "slen", "qlen"])
-    # each query-subject pair, I only keep the first(the longest alignment)
-    data1["query_gene"] = data1["qseqid"].apply(lambda x: getFromGene(dbA, x))
-    data1["subject_gene"] = data1["sseqid"].apply(lambda x: getFromGene(dbB, x))
-    data1.to_pickle("database/blastn_A_to_B.pkl")
-
+data1 = pd.read_pickle(fileLocation)
 fileLocation = args.blastnBtoA
-if args.blastnBtoA[-4:] == ".pkl":
-    data2 = pd.read_pickle(fileLocation)
-else:
-    data2 = pd.read_csv(fileLocation, sep="\t", names=["qseqid", "sseqid",
-                                            "pident", "length", "mismatch",
-                                            "gapopen", "qstart", "qend", "sstart",
-                                            "send", "evalue", "bitscore", "slen", "qlen"])
-    # each query-subject pair, I only keep the first(the longest alignment)
-    data2["query_gene"] = data2["qseqid"].apply(lambda x: getFromGene(dbA, x))
-    data2["subject_gene"] = data2["sseqid"].apply(lambda x: getFromGene(dbB, x))
-    data2.to_pickle("database/blastn_B_to_A.pkl")
-
+data2 = pd.read_pickle(fileLocation)
 df1 = data1.groupby(["qseqid", "sseqid"]).head(1).reset_index(drop=True)
 df2 = data2.groupby(["qseqid", "sseqid"]).head(1).reset_index(drop=True)
 
@@ -442,7 +458,7 @@ df = pd.concat([df1, df2]).reset_index(drop=True)
 # df["ratio"] = df["length"]**2/df["qlen"]
 # df["ratio"] = df["length"]*(1+ df["length"]/df["qlen"]) * df["pident"]
 # df["ratio"] = df["bitscore"] + df["length"]*(1+ df["length"]/df["qlen"])
-# df["ratio"] = df["bitscore"]
+df["ratio"] = df["bitscore"]
 # df["lengthScore"] = df["length"]*(1+ df["length"]/df["qlen"])
 df["lengthScore2"] = df["length"]**2/df["qlen"]/df["slen"]  # df["slen"] part just used for normalization
 # I could add an aditional penalty for mismatch.
@@ -487,10 +503,30 @@ with open(write_to, "w") as out:
                 if fromGene == query_gene:
                     pass
                 else:
-                    # change to absent_gene
-                    # print(i)
-                    line["Call"] = "absent_gene"
-                    line["SourceB_Gene"] = ""
+                    # if two genes don't overlap.
+                    fromGenome = line["SourceA"]
+                    toGenome = line["SourceB"]
+                    fromTranscript = line["SourceA_Transcript_ID"] + ".mrna1"
+                    queryTranscript = a["qseqid"].iloc[0] + ".mrna1"
+                    try:
+                        from_gene_seq = database_dic[fromGenome+"to"+toGenome][fromTranscript]
+                        query_gene_seq = database_dic[fromGenome+"to"+toGenome][queryTranscript]
+                        # from_gene_seq = database_dic[fromGenome+"to"+toGenome][fromGene]
+                        # query_gene_seq = database_dic[fromGenome+"to"+toGenome][query_gene]
+                        if from_gene_seq.start < query_gene_seq.end and query_gene_seq.start < from_gene_seq.end:
+                            # they overlap.
+                            # change to absent_gene
+                            # print(i)
+                            line["Call"] = "absent_gene"
+                            line["SourceB_Gene"] = ""
+                    except:
+                        print(fromTranscript, "or", queryTranscript, "not exist in gff")
+                        pass
+                # else:
+                #     # change to absent_gene
+                #     # print(i)
+                #     line["Call"] = "absent_gene"
+                #     line["SourceB_Gene"] = ""
         line = line.fillna('')
         line["Score"] = str(line["Score"])
         formated_line = "\t".join(line.values) + "\n"

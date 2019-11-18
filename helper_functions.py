@@ -74,10 +74,10 @@ def getFromGene(fromDB, fromTranscript):
     Return the gene correspond to a given transcript in a chromosome
     If gene name is not available, return transcript name
 
-    Input: 
+    Input:
         fromDB: gffutils database, chromosome of the transcript
         fromTranscript: string, transcript name
-    Output: 
+    Output:
         fromGene: string, the name of a gene for the input transcript or transcript name if gene name is not available
     '''
     try:
@@ -115,14 +115,13 @@ def assign_unique(c, fromTranscript):
         c: string, classification in tracking file
         fromTranscript: string, transcript name
 
-    Output: 
+    Output:
         assign: string, assignment of "" or "unique"
     '''
     assign = ""
     if c == "=" or c == "k" or c == "c":
         assign = "unique"
     return assign
-
 
 
 def find_map_location(transcript, map_db):
@@ -132,7 +131,7 @@ def find_map_location(transcript, map_db):
     Input:
         transcript: string, transcript name
         map_db: gffutils database, mapping from query genome database to reference genome database
-    Output: 
+    Output:
         gene[0]: string, chromosome name
         gene[3]: int, start location of mapping
         gene[4]: int, end location of mapping
@@ -147,8 +146,8 @@ def find_gene_annotation(genome_db,chromosome,start,end,strand):
     Input:
         transcript: string, transcript name
         map_db: gffutils database, mapping from query genome database to reference genome database
-    Output: 
-        a list of feature gene, with attributes of gene ID and gene name 
+    Output:
+        a list of feature gene, with attributes of gene ID and gene name
     '''
     return list(genome_db.region(region=(chromosome, start, end), strand=strand, featuretype="gene"))
 
@@ -169,7 +168,7 @@ def assign_gene_fusion(c, assign, fromGenome, toGenome, fromTranscript, toTransc
         genome_db: gffutils database, genome database
         map_db: gffutils database, mapping from query genome database to reference genome database
 
-    Output: 
+    Output:
         assign: string, assignment
         gene_fusion_list: list, list of names of genes
         toGene: string, containing names of genes
@@ -182,9 +181,28 @@ def assign_gene_fusion(c, assign, fromGenome, toGenome, fromTranscript, toTransc
     chromosome,start,end,strand = find_map_location(fromTranscript, map_db)
     genes = find_gene_annotation(genome_db,chromosome,start,end,strand)
     if len(genes)>1:
+        all_parent_gene = []
+        for exon in map_db.children(fromTranscript, featuretype='exon'):
+            for gene in genome_db.region(region=(exon[0],exon[3],exon[4]), featuretype="exon"):
+                parents = list(genome_db.parents(gene, featuretype='gene'))
+                if parents:
+                    all_parent_gene.append(parents[0].id)
+        all_parent_gene = set(all_parent_gene)
+        # all_gene = set([gene['ID'][0] for gene in genes])& all_parent_gene
+        # genes = sorted(all_gene)
+        all_gene = []
         for gene in genes:
-            gene_id = gene['ID'][0]
+            if gene['ID'][0] in all_parent_gene:
+                all_gene.append(gene['ID'][0])
+        genes = all_gene
+    if len(genes)>1:
+        for gene in genes:
+            gene_id = gene
             gene_fusion_list.append(gene_id)
+    # if len(genes)>1:
+    #     for gene in genes:
+    #         gene_id = gene['ID'][0]
+    #         gene_fusion_list.append(gene_id)
     if len(gene_fusion_list) > 0:
         assign = "gene_fusion"
         toGene = ";".join(gene_fusion_list)
@@ -205,7 +223,7 @@ def assign_absent_gene(c, assign, map_db, toDB, fromTranscript, toGene):
         fromTranscript: string, transcript name
         toGene: string, gene of reference transcript
 
-    Output: 
+    Output:
         assign: string, assignment
     '''
     extra = ""
@@ -217,7 +235,7 @@ def assign_absent_gene(c, assign, map_db, toDB, fromTranscript, toGene):
     #         assign = "absent_gene"
     #     extra = f"\t{t.start}, {toDB[toGene].start}, {t.start - toDB[toGene].start}\t"
 
-    if c == 'u' or c == "x":
+    if c == 'u' or c == "x" or c == "s":
         # probably no match at all.
         assign = "absent_gene"
         extra = ""
@@ -249,7 +267,7 @@ def assign_absent_transcript(c, assign):
         c: string, classification in tracking file
         assign: string, temporary assignmnet/classification
 
-    Output: 
+    Output:
         assign: string, assignment
         extra: string, extra information
     '''

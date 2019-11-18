@@ -106,7 +106,7 @@ def compare_multiple_result(ground_truth, mySolution, my_summary):
                 line = solution.query(f"SourceB_Transcript_ID == '{toTranscript_solution_i}'")
                 assert len(line) == 1
                 line = line.iloc[0]
-                # print(toTranscript_solution_i, "Not exist in ground true")
+                # print(toTranscript_solution_i, "Not exist in ground truth")
                 # print(line)
                 sol = "\t".join(line.values.astype(str))
                 ref = ""
@@ -120,8 +120,17 @@ def compare_multiple_result(ground_truth, mySolution, my_summary):
                 assert len(line) == 1
                 line = line.iloc[0]
                 ref = "\t".join(line.values.astype(str))
-                sol_line = mySolution.query(f"SourceA_Transcript_ID == '{toTranscript_ground_truth_i}'")
-                sol = "\t".join(sol_line.values.astype(str))
+                sol = "None"
+                # sol_line = mySolution.query(f"SourceA_Transcript_ID == '{toTranscript_ground_truth_i}'")
+                # sol = ""
+                # for j, one_sol in sol_line.iterrows():
+                #     sol += "\t".join(one_sol.values.astype(str)) + '\n'
+                # try:
+                #     sol = "\t".join(sol_line.values.astype(str))
+                # except:
+                #     print("unknown problem")
+                #     print(sol_line)
+                #     sol = "Error"
                 print("ref:\n"+ref)
                 print("mySolution:\n"+sol)
                 count += 1
