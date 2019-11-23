@@ -1,0 +1,63 @@
+-ax splice A3, B6
+
+###############################################
+# Results:
+# B to A gene call accuracy:             92.42%
+# B to A transcript call accuracy:       81.82%
+# B to A unique call accuracy:           85.71%
+# B to A definitive call accuracy:       72.73%
+# A to B gene call accuracy:             97.01%
+# A to B transcript call accuracy:       95.60%
+# A to B unique call accuracy:           88.24%
+# A to B definitive call accuracy:       92.80%
+# ---------------------------------------------
+# Final Score:                           706.33
+###############################################
+
+###############################################
+# Results:
+# C to A gene call accuracy:             95.00%
+# C to A transcript call accuracy:       66.00%
+# C to A unique call accuracy:           80.56%
+# C to A definitive call accuracy:       60.00%
+# A to C gene call accuracy:             98.82%
+# A to C transcript call accuracy:       94.35%
+# A to C unique call accuracy:           84.85%
+# A to C definitive call accuracy:       92.94%
+# ---------------------------------------------
+# Final Score:                           672.52
+###############################################
+
+-ax splice
+
+###############################################
+# Results:
+# B to A gene call accuracy:             92.42%
+# B to A transcript call accuracy:       83.33%
+# B to A unique call accuracy:           92.86%
+# B to A definitive call accuracy:       75.76%
+# A to B gene call accuracy:             97.01%
+# A to B transcript call accuracy:       96.00%
+# A to B unique call accuracy:           82.35%
+# A to B definitive call accuracy:       93.60%
+# ---------------------------------------------
+# Final Score:                           713.34
+###############################################
+
+###############################################
+# Results:
+# C to A gene call accuracy:             95.00%
+# C to A transcript call accuracy:       66.00%
+# C to A unique call accuracy:           80.56%
+# C to A definitive call accuracy:       60.00%
+# A to C gene call accuracy:             99.29%
+# A to C transcript call accuracy:       93.50%
+# A to C unique call accuracy:           81.82%
+# A to C definitive call accuracy:       91.24%
+# ---------------------------------------------
+# Final Score:                           667.41
+###############################################
+
+$ python myCheck.py A.transcripts.fasta B.transcripts.fasta A.gff3 B.gff3 dev_validation_set.tsv A_to_B_post_modification_4.tsv
+
+$ python myCheck.py A.transcripts.fasta C.transcripts.fasta A.gff3 C.gff3 test_validation_set.tsv A_to_C_post_modification_4.tsv
