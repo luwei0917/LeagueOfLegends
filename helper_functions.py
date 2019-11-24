@@ -235,7 +235,7 @@ def assign_absent_gene(c, assign, map_db, toDB, fromTranscript, toGene):
     #         assign = "absent_gene"
     #     extra = f"\t{t.start}, {toDB[toGene].start}, {t.start - toDB[toGene].start}\t"
 
-    if c == 'u' or c == "x" or c == "s":
+    if c == 'u' or c == "x" or c == "s" or c == "i" or c == "y":
         # probably no match at all.
         assign = "absent_gene"
         extra = ""
