@@ -29,18 +29,21 @@
 454
 471
 --------------------------should be unique_transcript---------------------------
+not our problem
 ----------
 ref:
 A	C	transcriptA98955	transcriptC48228	unique_transcript	0	transcriptA98955	geneC15530	exact_match
 mySolution:
 A	C	transcriptA98955	transcriptC48228	unique_transcript	0	geneA20285	geneC15530	;category:=;
 ----------
+consider CDS comparison?
 ----------
 ref:
 C	A	transcriptC21580	transcriptA38435	unique_transcript	0	geneC26591	geneA32231	nan
 mySolution:
 C	A	transcriptC21580	transcriptA100848	unique_transcript	0	geneC26591	geneA32231	;category:j;from_len=1509;to_len=1014;from_coverage_length=3332;to_coverage_length=2456
 ----------
+again CDS might help.
 ----------
 ref:
 C	A	transcriptC21581	transcriptA96038	unique_transcript	0	geneC26591	geneA32231	nan
@@ -49,6 +52,7 @@ C	A	transcriptC21581	transcriptA100848	multiple_transcript	0	geneC26591	geneA322
 C	A	transcriptC21581	transcriptA96038	multiple_transcript	0	geneC26591	geneA32231	;category:=;from_len=1480;to_len=1196;from_coverage_length=3096;to_coverage_length=2638
 
 ----------
+same
 ----------
 ref:
 C	A	transcriptC21579	transcriptA13117	unique_transcript	0	geneC26591	geneA32231	nan
@@ -57,12 +61,14 @@ C	A	transcriptC21579	transcriptA100848	multiple_transcript	0	geneC26591	geneA322
 C	A	transcriptC21579	transcriptA13117	multiple_transcript	0	geneC26591	geneA32231	;category:=;from_len=1393;to_len=1188;from_coverage_length=3096;to_coverage_length=2717
 
 ----------
+no solution
 ----------
 ref:
 A	C	transcriptA38435	transcriptC21580	unique_transcript	0	geneA32231	geneC26591	nan
 mySolution:
 A	C	transcriptA38435	nan	absent_transcript	0	geneA32231	geneC26591	;category:j;
 ----------
+we are right?
 ----------
 ref:
 C	A	transcriptC51023	transcriptA52049	unique_transcript	0	geneC10293	geneA14875	target_contained
@@ -144,6 +150,7 @@ C	A	transcriptC706	nan	absent_transcript	0	geneC1168	geneA255	nan
 mySolution:
 C	A	transcriptC706	nan	absent_gene	0	geneC1168	nan	;category:u;
 ----------
+we think we are right.
 ----------
 ref:
 A	C	transcriptA28438	nan	absent_transcript	0	geneA12607	geneC8282	match_not_same_gene

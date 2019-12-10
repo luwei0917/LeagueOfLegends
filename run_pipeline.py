@@ -568,7 +568,7 @@ subset["fromCoverage"] = subset.apply(lambda x: get_coverage_length(x.SourceA, x
 for i in range(len(consider_list)):
     fromTranscript = consider_list[i]
     a = subset.query(f"SourceA_Transcript_ID=='{fromTranscript}'").reset_index(drop=True)
-    z = np.abs(stats.zscore(a["toCoverage"]))
+    # z = np.abs(stats.zscore(a["toCoverage"]))
     X = np.append(a["fromCoverage"].iloc[0], a["toCoverage"].values).reshape(-1, 1)
     kmeans = KMeans(n_clusters=2)
     kmeans.fit(X)

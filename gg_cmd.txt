@@ -85,3 +85,5 @@ run_pipeline.py -o AB_new_gene_fusion -n nov18
 run_pipeline.py -o AB_new_gene_fusion -n nov18
 run_pipeline.py -f A -t C --AtoBTracking GMAP_A_to_C/AtoCGMAP.tracking --BtoATracking GMAP_A_to_C/CtoAGMAP.tracking --trmap_AtoB GMAP_A_to_C/AtoCGMAP --trmap_BtoA GMAP_A_to_C/CtoAGMAP --dbA database/chromosomeA --dbB database/chromosomeC --dbAtoB database/GMAP_chromosome_A_to_C --dbBtoA database/GMAP_chromosome_C_to_A --blastnAtoB database/blastn_A_to_B.pkl --blastnBtoA database/blastn_B_to_A.pkl --validation test_validation_set.tsv -o AC_new_gene_fusion -n nov18
 run_pipeline.py -f A -t C --AtoBTracking GMAP_A_to_C/AtoCGMAP.tracking --BtoATracking GMAP_A_to_C/CtoAGMAP.tracking --trmap_AtoB GMAP_A_to_C/AtoCGMAP --trmap_BtoA GMAP_A_to_C/CtoAGMAP --dbA database/chromosomeA --dbB database/chromosomeC --dbAtoB database/GMAP_chromosome_A_to_C --dbBtoA database/GMAP_chromosome_C_to_A --blastnAtoB database/blastn_A_to_B.pkl --blastnBtoA database/blastn_B_to_A.pkl --validation test_validation_set.tsv -o AC_new_gene_fusion -n nov18
+run_pipeline.py -o AB_new_gene_fusion -n nov18 --validation None
+run_pipeline.py -o AB_new_gene_fusion -n complete_nov18 --validation None
